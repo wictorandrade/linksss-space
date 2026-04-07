@@ -1,0 +1,102 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "nxVersion": "20.8.0",
+  "defaultBase": "main",
+  "affected": {
+    "defaultBranch": "main"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nx/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test"]
+      }
+    }
+  },
+  "targetDefaults": {
+    "dev": {
+      "dependsOn": ["prisma:generate"]
+    },
+    "build": {
+      "dependsOn": ["prisma:generate"]
+    }
+  },
+  "projects": {
+    "api": {
+      "targets": {
+        "dev": {
+          "executor": "@nx/nest:serve",
+          "options": {
+            "buildTarget": "api:build"
+          }
+        },
+        "build": {
+          "executor": "@nx/nest:build",
+          "outputs": ["{workspaceRoot}/dist/apps/api"]
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint"
+        },
+        "test": {
+          "executor": "@nx/jest:jest"
+        },
+        "prisma:generate": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "prisma generate",
+            "cwd": "apps/api"
+          }
+        },
+        "prisma:migrate": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "prisma migrate dev",
+            "cwd": "apps/api"
+          }
+        },
+        "prisma:deploy": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "prisma migrate deploy",
+            "cwd": "apps/api"
+          }
+        },
+        "prisma:studio": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "prisma studio",
+            "cwd": "apps/api"
+          }
+        },
+        "prisma:seed": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "tsx prisma/seed.ts",
+            "cwd": "apps/api"
+          }
+        }
+      }
+    },
+    "client": {
+      "targets": {
+        "dev": {
+          "executor": "@nx/next:server",
+          "options": {
+            "buildTarget": "client:build",
+            "port": 3002
+          }
+        },
+        "build": {
+          "executor": "@nx/next:build",
+          "outputs": ["{workspaceRoot}/dist/apps/client"]
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint"
+        },
+        "test": {
+          "executor": "@nx/jest:jest"
+        }
+      }
+    }
+  }
+}
