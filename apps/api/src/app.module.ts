@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { PrismaModule } from './core/prisma/prisma.module'
 import { AuthModule } from './core/auth/auth.module'
+import { SsoAuthGuard } from './core/auth/guards/jwt-auth.guard'
 import { UserModule } from './core/user/user.module'
 import { PagesModule } from './modules/pages/pages.module'
 import { LinksModule } from './modules/links/links.module'
@@ -14,14 +15,17 @@ import { TemplatesModule } from './modules/templates/templates.module'
 import { AnalyticsModule } from './modules/analytics/analytics.module'
 import { ContentModule } from './modules/content/content.module'
 import { AdminModule } from './modules/admin/admin.module'
+import configuration from './config/app.config'
 import { envValidation } from './config/env.validation'
 
 @Module({
   imports: [
     // Config
     ConfigModule.forRoot({
+      load: [configuration],
       isGlobal: true,
       validationSchema: envValidation,
+      expandVariables: true,
     }),
 
     // Rate limiting
@@ -52,6 +56,10 @@ import { envValidation } from './config/env.validation'
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: SsoAuthGuard,
     },
   ],
 })

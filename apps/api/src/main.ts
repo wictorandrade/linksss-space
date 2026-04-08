@@ -1,50 +1,41 @@
-import { NestFactory } from '@nestjs/core'
-import { ValidationPipe } from '@nestjs/common'
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
-  // Global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  )
+  const isDev = process.env.NODE_ENV === 'development'
+  const globalPrefix = isDev ? 'linksss/v1/dev' : 'linksss/v1'
+  app.setGlobalPrefix(globalPrefix)
 
-  // CORS
+  const configService = app.get(ConfigService)
+  const port = configService.getOrThrow<number>('port')
+  const corsOrigin = configService.getOrThrow<string[]>('corsOrigin')
+
   app.enableCors({
-    origin: [
-      'http://localhost:3002',
-      'http://localhost:3000',
-      'https://linksss.space',
-    ],
+    origin: corsOrigin,
     credentials: true,
   })
 
-  // API prefix
-  app.setGlobalPrefix('api')
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  )
 
-  // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Linksss Space API')
-    .setDescription('API para o clone do Linktree - Linksss Space')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build()
-  const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup('docs', app, document)
+  const host = '0.0.0.0'
 
-  const configService = app.get(ConfigService)
-  const port = configService.get('PORT', 5000)
-
-  await app.listen(port)
-  console.log(`🚀 API running on http://localhost:${port}`)
-  console.log(`📚 Docs available at http://localhost:${port}/docs`)
+  await app.listen(port, host)
+  Logger.log(
+    `Application is running on: http://${host}:${port}/${globalPrefix}`,
+    'Bootstrap',
+  )
 }
 
 bootstrap()

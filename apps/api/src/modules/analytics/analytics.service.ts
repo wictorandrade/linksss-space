@@ -1,5 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common'
 import { PrismaService } from '../../core/prisma/prisma.service'
+import { PageAnalytics, Link, LinkClick } from '../../../generated'
 
 @Injectable()
 export class AnalyticsService {
@@ -53,8 +54,8 @@ export class AnalyticsService {
       orderBy: { date: 'asc' },
     })
 
-    const totalViews = analytics.reduce((sum, a) => sum + a.views, 0)
-    const totalVisitors = analytics.reduce((sum, a) => sum + a.uniqueVisitors, 0)
+    const totalViews = analytics.reduce((sum: number, a: PageAnalytics) => sum + a.views, 0)
+    const totalVisitors = analytics.reduce((sum: number, a: PageAnalytics) => sum + a.uniqueVisitors, 0)
 
     return {
       totalViews,
@@ -88,7 +89,7 @@ export class AnalyticsService {
       },
     })
 
-    return links.map((link) => ({
+    return links.map((link: Link & { clicks: LinkClick[]; _count: { clicks: number } }) => ({
       id: link.id,
       title: link.title,
       url: link.url,

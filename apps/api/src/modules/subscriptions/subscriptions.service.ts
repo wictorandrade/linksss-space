@@ -14,7 +14,7 @@ export class SubscriptionsService {
   ) {
     const stripeKey = this.configService.get('STRIPE_SECRET_KEY')
     if (stripeKey) {
-      this.stripe = new Stripe(stripeKey, { apiVersion: '2024-12-18.acacia' })
+      this.stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia' })
     }
   }
 

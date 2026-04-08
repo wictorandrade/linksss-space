@@ -1,19 +1,17 @@
-import { Controller, Get, Post, Param, Query, Body, UseGuards, HttpStatus, HttpCode } from '@nestjs/common'
+import { Controller, Get, Post, Param, Query, Body, HttpStatus, HttpCode } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger'
 import { CurrentUser } from '../../core/auth/decorators/current-user.decorator'
-import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard'
 import { IsPublic } from '../../core/auth/decorators/is-public.decorator'
 import { User } from '../../../generated'
 import { AnalyticsService } from './analytics.service'
 
 @ApiTags('analytics')
 @Controller('analytics')
+@ApiBearerAuth()
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('page/:pageId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get page analytics' })
   async getPageAnalytics(
     @CurrentUser() user: User,
@@ -24,8 +22,6 @@ export class AnalyticsController {
   }
 
   @Get('page/:pageId/links')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get link click analytics' })
   async getLinkAnalytics(
     @CurrentUser() user: User,

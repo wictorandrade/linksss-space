@@ -1,9 +1,17 @@
 import { Injectable, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { IS_PUBLIC_KEY } from './decorators/is-public.decorator'
-import { IS_ADMIN_KEY } from './decorators/admin-only.decorator'
-import { AuthService } from './auth.service'
+import { IS_PUBLIC_KEY } from '../decorators/is-public.decorator'
+import { IS_ADMIN_KEY } from '../decorators/admin-only.decorator'
+import { AuthService } from '../auth.service'
 import { Request } from 'express'
+
+// Extend Request type
+declare module 'express' {
+  interface Request {
+    user?: any
+    ssoPayload?: any
+  }
+}
 
 @Injectable()
 export class SsoAuthGuard {

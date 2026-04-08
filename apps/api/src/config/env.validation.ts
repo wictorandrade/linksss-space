@@ -9,13 +9,14 @@ export const envValidation = Joi.object({
   REDIS_PORT: Joi.number().default(6379),
 
   // Server
-  PORT: Joi.number().default(5000),
-  NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+  PORT: Joi.number().default(5002),
+  NODE_ENV: Joi.string().valid('development', 'production', 'test', 'staging').default('development'),
+  CORS_ORIGIN: Joi.string().default('localhost:3002'),
 
-  // JWT / SSO
-  JWT_ACCESS_COOKIE_NAME: Joi.string().default('access_token'),
-  SSO_PUBLIC_KEY_URL: Joi.string().required(),
+  // SSO Integration (cookie forwarding)
   SSO_API_URL: Joi.string().required(),
+  SSO_URL: Joi.string().required(),
+  COOKIE_NAME_PREFIX: Joi.string().default('sso-souzs'),
 
   // Stripe
   STRIPE_SECRET_KEY: Joi.string().required(),
@@ -23,7 +24,6 @@ export const envValidation = Joi.object({
 
   // App URLs
   APP_URL: Joi.string().default('http://localhost:3002'),
-  SSO_URL: Joi.string().required(),
 
   // Storage (MinIO/S3)
   AWS_ACCESS_KEY_ID: Joi.string(),

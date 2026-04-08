@@ -10,7 +10,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { UserPayload } from '@/types/sso'
 
-const COOKIE_PREFIX = process.env.COOKIE_NAME_PREFIX ?? 'linksss'
+const COOKIE_PREFIX = process.env.COOKIE_NAME_PREFIX ?? 'sso-souzs'
 const SSO_API_URL = (process.env.SSO_API_URL ?? process.env.NEXT_PUBLIC_SSO_API_URL)!
 const SSO_URL = process.env.NEXT_PUBLIC_SSO_URL!
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_BASE_URL)!

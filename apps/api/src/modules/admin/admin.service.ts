@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common'
 import { PrismaService } from '../../core/prisma/prisma.service'
+import { User, Page, PageAnalytics, LinkClick } from '../../../generated'
 
 @Injectable()
 export class AdminService {
@@ -140,7 +141,7 @@ export class AdminService {
     ])
 
     return {
-      users: users.map((u) => ({
+      users: users.map((u: any) => ({
         id: u.id,
         name: u.name,
         email: u.email,
@@ -258,7 +259,7 @@ export class AdminService {
       take: limit,
     })
 
-    const pageIds = pages.map((p) => p.pageId)
+    const pageIds = pages.map((p: { pageId: string }) => p.pageId)
     const pageData = await this.prisma.page.findMany({
       where: { id: { in: pageIds } },
       select: { id: true, slug: true, title: true, userId: true, user: { select: { email: true } } },
@@ -271,10 +272,10 @@ export class AdminService {
       _count: true,
     })
 
-    return pages.map((p) => ({
+    return pages.map((p: { pageId: string; _sum: { views: number | null } }) => ({
       ...pageData.find((pd) => pd.id === p.pageId),
       views: p._sum.views || 0,
-      clicks: clickCounts.reduce((sum, c) => sum + c._count, 0),
+      clicks: clickCounts.reduce((sum: number, c: { _count: number }) => sum + c._count, 0),
     }))
   }
 }

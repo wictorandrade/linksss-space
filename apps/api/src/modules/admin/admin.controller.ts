@@ -7,11 +7,10 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger'
 import { CurrentUser } from '../../core/auth/decorators/current-user.decorator'
-import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard'
+import { AdminOnly } from '../../core/auth/decorators/admin-only.decorator'
 import { User } from '../../../generated'
 import { AdminService } from './admin.service'
 import { CreatePlanDto } from './dto/create-plan.dto'
@@ -20,8 +19,8 @@ import { CreateGrantDto } from './dto/create-grant.dto'
 
 @ApiTags('admin')
 @Controller('admin')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
+@AdminOnly()
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

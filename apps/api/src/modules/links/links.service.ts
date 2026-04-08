@@ -33,6 +33,9 @@ export class LinksService {
 
     // Check plan limits
     const plan = await this.userService.getEffectivePlan(userId)
+    if (!plan) {
+      throw new BadRequestException('Plan not found')
+    }
     const currentLinks = await this.prisma.link.count({
       where: { pageId: createLinkDto.pageId },
     })
@@ -110,7 +113,18 @@ export class LinksService {
 
     return this.prisma.link.update({
       where: { id },
-      data: updateLinkDto,
+      data: {
+        type: updateLinkDto.type as any,
+        title: updateLinkDto.title,
+        url: updateLinkDto.url,
+        icon: updateLinkDto.icon,
+        imageUrl: updateLinkDto.imageUrl,
+        style: updateLinkDto.style as any,
+        position: updateLinkDto.position,
+        isActive: updateLinkDto.isActive,
+        isPaid: updateLinkDto.isPaid,
+        price: updateLinkDto.price,
+      },
     })
   }
 
@@ -135,7 +149,7 @@ export class LinksService {
     }
 
     // Update positions
-    await this.prisma.$transaction(
+    await Promise.all(
       reorderDto.links.map((item) =>
         this.prisma.link.update({
           where: { id: item.id },

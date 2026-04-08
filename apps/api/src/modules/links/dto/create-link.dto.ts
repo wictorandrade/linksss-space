@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsBoolean, IsEnum, IsNumber, IsUrl, IsObject, MinLength, MaxLength } from 'class-validator'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { LinkType } from '../../../generated'
+import { LinkType } from '../../../../generated'
 
 export class CreateLinkDto {
   @ApiProperty({ description: 'Page ID' })
@@ -97,9 +97,4 @@ export class UpdateLinkDto {
   @IsOptional()
   @IsNumber()
   price?: number
-}
-
-export class ReorderLinksDto {
-  @ApiProperty({ type: [{ id: 'string', position: 'number' }] })
-  links: { id: string; position: number }[]
 }

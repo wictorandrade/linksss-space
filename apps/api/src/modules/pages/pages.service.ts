@@ -61,6 +61,9 @@ export class PagesService {
 
     // Check plan limits
     const plan = await this.userService.getEffectivePlan(userId)
+    if (!plan) {
+      throw new BadRequestException('Plan not found')
+    }
     const currentPages = await this.prisma.page.count({ where: { userId } })
 
     if (plan.maxPages !== -1 && currentPages >= plan.maxPages) {
@@ -177,8 +180,14 @@ export class PagesService {
     return this.prisma.page.update({
       where: { id },
       data: {
-        ...updatePageDto,
         slug: updatePageDto.slug?.toLowerCase(),
+        title: updatePageDto.title,
+        description: updatePageDto.description,
+        bio: updatePageDto.bio,
+        avatarUrl: updatePageDto.avatarUrl,
+        backgroundImageUrl: updatePageDto.backgroundImageUrl,
+        theme: updatePageDto.theme as any,
+        isActive: updatePageDto.isActive,
       },
       include: {
         links: {
