@@ -12,8 +12,7 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/client/package.json ./apps/client/
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 
 # ─── Stage 2: Build ──────────────────────────────────────────────────────────
 FROM node:${NODE_VERSION} AS builder
