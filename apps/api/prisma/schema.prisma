@@ -1,0 +1,332 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USER ====================
+
+model User {
+  id        String   @id @default(uuid())
+  ssoId     String   @unique
+  email     String   @unique
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pages        Page[]
+  subscription Subscription?
+  grants       UserGrant[]
+  purchases    ContentPurchase[]
+
+  @@index([ssoId])
+  @@index([email])
+}
+
+// ==================== PAGE ====================
+
+model Page {
+  id          String   @id @default(uuid())
+  userId      String
+  slug        String   @unique
+  title       String
+  description String?
+  bio         String?
+  avatarUrl   String?
+  backgroundImageUrl String?
+  theme       Json     @default("{\"font\":\"plus_jakarta_sans\",\"buttonStyle\":\"rounded\",\"buttonShadow\":false}")
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     Link[]
+  analytics PageAnalytics[]
+  contents  Content[]
+
+  @@index([slug])
+  @@index([userId])
+  @@index([isActive])
+}
+
+// ==================== LINK ====================
+
+model Link {
+  id        String   @id @default(uuid())
+  pageId    String
+  type      LinkType @default(URL)
+  title     String
+  url       String
+  icon      String?
+  imageUrl  String?
+  style     Json     @default("{\"backgroundColor\":\"#ffffff\",\"textColor\":\"#000000\",\"borderRadius\":12,\"borderWidth\":0,\"borderColor\":\"transparent\"}")
+  position  Int      @default(0)
+  isActive  Boolean  @default(true)
+  isPaid    Boolean  @default(false)
+  price     Decimal? @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page   Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  clicks LinkClick[]
+
+  @@index([pageId])
+  @@index([position])
+  @@index([isActive])
+}
+
+enum LinkType {
+  URL
+  EMAIL
+  PHONE
+  WHATSAPP
+  INSTAGRAM
+  YOUTUBE
+  TIKTOK
+  TWITTER
+  LINKEDIN
+  FACEBOOK
+  SPOTIFY
+  APPLE_MUSIC
+  TWITCH
+  DISCORD
+  TELEGRAM
+  BEHANCE
+  DRIBBBLE
+  GITHUB
+  MEDIUM
+  SUBSTACK
+  CUSTOM
+  PAID_CONTENT
+}
+
+// ==================== CONTENT ====================
+
+model Content {
+  id          String      @id @default(uuid())
+  pageId      String
+  title       String
+  description String?
+  type        ContentType @default(FILE)
+  contentUrl  String?
+  fileUrl     String?
+  price       Decimal     @db.Decimal(10, 2)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  page      Page              @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  purchases ContentPurchase[]
+
+  @@index([pageId])
+  @@index([isActive])
+}
+
+enum ContentType {
+  FILE
+  VIDEO
+  AUDIO
+  TEXT
+  LINK
+  COURSE
+  DOWNLOAD
+}
+
+model ContentPurchase {
+  id        String   @id @default(uuid())
+  contentId String
+  userId    String
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([contentId, userId])
+  @@index([contentId])
+  @@index([userId])
+}
+
+// ==================== ANALYTICS ====================
+
+model PageAnalytics {
+  id              String   @id @default(uuid())
+  pageId          String
+  date            DateTime @default(now())
+  views           Int      @default(0)
+  uniqueVisitors  Int      @default(0)
+  avgTimeOnPage   Float?
+  bounceRate      Float?
+  topReferrers    Json?
+  topCountries    Json?
+  topDevices      Json?
+
+  page Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, date])
+  @@index([pageId])
+  @@index([date])
+}
+
+model LinkClick {
+  id        String   @id @default(uuid())
+  linkId    String
+  clickedAt DateTime @default(now())
+  referrer  String?
+  device    String?
+  country   String?
+  city      String?
+  browser   String?
+  os        String?
+
+  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
+  @@index([clickedAt])
+}
+
+// ==================== PLANS ====================
+
+model Plan {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  stripePriceId   String?
+  maxLinks        Int      @default(10)
+  maxPages        Int      @default(1)
+  maxAnalytics    Int      @default(30)
+  customThemes    Boolean  @default(false)
+  paidContent     Boolean  @default(false)
+  customDomain    Boolean  @default(false)
+  removeWatermark Boolean  @default(false)
+  prioritySupport Boolean  @default(false)
+  price           Decimal  @db.Decimal(10, 2)
+  isPublic        Boolean  @default(true)
+  description     String?
+  features        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  subscriptions Subscription[]
+  grants        UserGrant[]
+  coupons       Coupon[]
+
+  @@index([name])
+  @@index([isPublic])
+}
+
+model Subscription {
+  id                String     @id @default(uuid())
+  userId            String
+  planId            String
+  stripeSubId       String?    @unique
+  stripeCustomerId  String?
+  status            SubStatus  @default(ACTIVE)
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@unique([userId])
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+}
+
+enum SubStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
+  UNPAID
+}
+
+// ==================== COUPONS ====================
+
+model Coupon {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  discountPct Int?
+  discountAmt Decimal?  @db.Decimal(10, 2)
+  planId      String?
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  plan Plan? @relation(fields: [planId], references: [id])
+
+  @@index([code])
+  @@index([isActive])
+}
+
+// ==================== USER GRANTS ====================
+
+model UserGrant {
+  id        String    @id @default(uuid())
+  userId    String
+  planId    String
+  reason    String?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@unique([userId, planId])
+  @@index([userId])
+  @@index([planId])
+}
+
+// ==================== TEMPLATES ====================
+
+model Template {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  category    String   @default("general")
+  theme       Json
+  previewUrl  String?
+  isPublic    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([isFeatured])
+  @@index([isPublic])
+}
+
+// ==================== SETTINGS ====================
+
+model PlatformSettings {
+  id                    String   @id @default(uuid())
+  siteName             String   @default("Linksss")
+  siteDescription      String?
+  logoUrl              String?
+  faviconUrl           String?
+  primaryColor         String   @default("#6366f1")
+  allowFreePlan        Boolean  @default(true)
+  requireEmailVerify   Boolean  @default(false)
+  maintenanceMode      Boolean  @default(false)
+  termsUrl             String?
+  privacyUrl           String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
