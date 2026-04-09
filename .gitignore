@@ -5,3 +5,5 @@
 # Next.js
 .next
 out
+.env
+/node_modules/
