@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Logo } from '@/components/Logo'
 
 export function Footer() {
   return (
@@ -7,13 +8,8 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">L</span>
-              </div>
-              <span className="font-bold text-xl">Linksss</span>
-            </Link>
-            <p className="text-muted-foreground text-sm max-w-xs">
+            <Logo size="md" />
+            <p className="text-muted-foreground text-sm max-w-xs mt-4">
               Sua bio em um só lugar. Links, conteúdo pago, analytics completo.
               Feito com ❤️ por Souzs.
             </p>

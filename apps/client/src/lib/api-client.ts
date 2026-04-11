@@ -1,12 +1,16 @@
 import axios from 'axios'
 
-const SSO_URL = process.env.NEXT_PUBLIC_SSO_URL || 'http://localhost:3000'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api'
+const SSO_URL = process.env.NEXT_PUBLIC_SSO_URL || 'http://localhost:4000'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const API_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:3001/api/v1'
 
 // API client for backend
 export const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true,
 })
 
 // SSO redirect helper

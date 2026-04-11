@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LogOut, Settings, Plus, LayoutDashboard } from 'lucide-react'
 import type { UserPayload } from '@/types/sso'
+import { Logo } from '@/components/Logo'
 import {
   Sidebar,
   SidebarContent,
@@ -60,13 +61,7 @@ export function DashboardLayout({ user, children }: DashboardLayoutProps) {
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
                 <Link href="/dashboard">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
-                    <span className="text-sm font-bold">L</span>
-                  </div>
-                  <div className="flex flex-col gap-0.5 leading-none">
-                    <span className="font-semibold">Linksss</span>
-                    <span className="text-xs text-muted-foreground">Seu espaço</span>
-                  </div>
+                  <Logo variant="sidebar" size="sm" />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

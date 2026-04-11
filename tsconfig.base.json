@@ -14,7 +14,12 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@common/*": ["apps/api/src/common/*"],
+      "@core/*": ["apps/api/src/core/*"],
+      "@config/*": ["apps/api/src/config/*"],
+      "@modules/*": ["apps/api/src/modules/*"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

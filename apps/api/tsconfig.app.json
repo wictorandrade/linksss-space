@@ -13,7 +13,14 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@common/*": ["common/*"],
+      "@core/*": ["core/*"],
+      "@config/*": ["config/*"],
+      "@modules/*": ["modules/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

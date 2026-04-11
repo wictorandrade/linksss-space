@@ -1,5 +1,13 @@
 name: linksss-space
 
+# Infraestrutura — banco de dados, cache e armazenamento.
+#
+# Comandos disponíveis na raiz do projeto:
+#   npm run docker:infra          — sobe só infra
+#   npm run docker:build          — builda API e client
+#   npm run docker:up             — sobe infra + api + client
+#   npm run docker:down           — derruba tudo
+
 services:
   postgres:
     image: postgres:latest
@@ -47,59 +55,6 @@ services:
       MINIO_DEFAULT_BUCKETS: "linksss-storage:private,linksss-storage-public:public"
     volumes:
       - minio-data:/data
-    networks:
-      - linksss-network
-
-  api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "${API_PORT:-5002}:5002"
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      DATABASE_URL: postgresql://${POSTGRES_USER:-linksss}:${POSTGRES_PASSWORD:-linksss123}@postgres:5432/${POSTGRES_DB:-linksss-db}?schema=public
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SSO_URL: ${SSO_URL:-http://localhost:3000}
-      SSO_API_URL: ${SSO_API_URL:-http://sso-api:5000}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-      PORT: 5002
-      APP_URL: ${APP_URL:-http://localhost:3002}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3002}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-linksss}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-linksss-secret}
-      AWS_S3_ENDPOINT: http://minio:9000
-      AWS_S3_BUCKET: linksss-storage-public
-      COOKIE_SECRET: ${COOKIE_SECRET:-linksss-secret-key-change-in-production}
-      COOKIE_NAME_PREFIX: ${COOKIE_NAME_PREFIX:-linksss}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - linksss-network
-
-  client:
-    build:
-      context: .
-      dockerfile: apps/client/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "${CLIENT_PORT:-3002}:3000"
-    environment:
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3002}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5002/linksss/v1}
-      NEXT_PUBLIC_SSO_URL: ${NEXT_PUBLIC_SSO_URL:-http://localhost:3000}
-      NEXT_PUBLIC_SSO_API_URL: ${NEXT_PUBLIC_SSO_API_URL:-http://localhost:5000}
-      NEXT_PUBLIC_CDN_URL: http://minio:9000/linksss-storage-public/
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-    depends_on:
-      - api
     networks:
       - linksss-network
 

@@ -1,16 +1,47 @@
 import { MetadataRoute } from 'next'
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://linksss.space'
+const BASE_URL = 'https://linksss.space'
 
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/dashboard', '/api', '/admin'],
+        allow: [
+          '/',
+          '/pricing',
+          '/templates',
+          '/features',
+          '/terms',
+          '/privacy',
+          '/support',
+        ],
+        disallow: [
+          '/dashboard',
+          '/dashboard/',
+          '/admin',
+          '/admin/',
+          '/api/',
+          '/auth/',
+          '/callback',
+          '/_next/',
+          '/settings',
+          '/billing',
+          '/analytics',
+          '/profile',
+          '/account',
+        ],
+      },
+      {
+        userAgent: 'GPTBot',
+        disallow: ['/'],
+      },
+      {
+        userAgent: 'CCBot',
+        disallow: ['/'],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   }
 }

@@ -13,6 +13,9 @@ export const envValidation = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test', 'staging').default('development'),
   CORS_ORIGIN: Joi.string().default('localhost:3002'),
 
+  // API Public URL (for storage proxy)
+  API_PUBLIC_URL: Joi.string().required(),
+
   // SSO Integration (cookie forwarding)
   SSO_API_URL: Joi.string().required(),
   SSO_URL: Joi.string().required(),
@@ -25,9 +28,10 @@ export const envValidation = Joi.object({
   // App URLs
   APP_URL: Joi.string().default('http://localhost:3002'),
 
-  // Storage (MinIO/S3)
-  AWS_ACCESS_KEY_ID: Joi.string(),
-  AWS_SECRET_ACCESS_KEY: Joi.string(),
-  AWS_S3_ENDPOINT: Joi.string(),
-  AWS_S3_BUCKET: Joi.string(),
+  // Storage (MinIO/S3/R2)
+  AWS_REGION: Joi.string().default('auto'),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  AWS_S3_ENDPOINT: Joi.string().required(),
+  AWS_S3_BUCKET: Joi.string().required(),
 })

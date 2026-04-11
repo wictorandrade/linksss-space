@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
+import { CommonModule } from './common/common.module'
 import { PrismaModule } from './core/prisma/prisma.module'
 import { AuthModule } from './core/auth/auth.module'
 import { SsoAuthGuard } from './core/auth/guards/jwt-auth.guard'
 import { UserModule } from './core/user/user.module'
+import { StorageModule } from './core/storage/storage.module'
 import { PagesModule } from './modules/pages/pages.module'
 import { LinksModule } from './modules/links/links.module'
 import { PlansModule } from './modules/plans/plans.module'
@@ -37,9 +39,11 @@ import { envValidation } from './config/env.validation'
     ]),
 
     // Core modules
+    CommonModule,
     PrismaModule,
     AuthModule,
     UserModule,
+    StorageModule,
 
     // Feature modules
     PagesModule,

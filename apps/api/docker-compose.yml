@@ -1,0 +1,54 @@
+name: linksss-space
+
+# API — serviço da aplicação backend.
+#
+# Uso (a partir de apps/api/):
+#   docker compose up -d
+#   docker compose up -d --build   # forçar rebuild da imagem
+#
+# Requisito: infra já rodando (postgres, redis, minio).
+# Suba a infra primeiro com:
+#   docker compose -f ../../docker-compose.yml up -d
+
+services:
+  api:
+    image: linksss/api:prod
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "${API_PORT:-5002}:5002"
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql://${POSTGRES_USER:-linksss}:${POSTGRES_PASSWORD:-linksss123}@postgres:5432/${POSTGRES_DB:-linksss-db}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SSO_URL: ${SSO_URL:-http://localhost:3000}
+      SSO_API_URL: ${SSO_API_URL:-http://sso-api:5000}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      PORT: 5002
+      APP_URL: ${APP_URL:-http://localhost:3002}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3002}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-linksss}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-linksss-secret}
+      AWS_S3_ENDPOINT: http://minio:9000
+      AWS_S3_BUCKET: linksss-storage-public
+      COOKIE_SECRET: ${COOKIE_SECRET:-linksss-secret-key-change-in-production}
+      COOKIE_NAME_PREFIX: ${COOKIE_NAME_PREFIX:-linksss}
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - linksss-network
+
+networks:
+  linksss-network:
+    external: true
+    name: linksss-space_linksss-network

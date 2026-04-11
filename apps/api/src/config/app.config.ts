@@ -2,6 +2,7 @@ export default () => ({
   nodeEnv: process.env.NODE_ENV,
   isDev: process.env.NODE_ENV === 'development',
   port: process.env.PORT,
+  apiPublicUrl: process.env.API_PUBLIC_URL,
   corsOrigin: String(process.env.CORS_ORIGIN).split(','),
   ssoApiUrl: process.env.SSO_API_URL,
   ssoUrl: process.env.SSO_URL,
@@ -16,7 +17,7 @@ export default () => ({
     db: process.env.REDIS_DB,
   },
   aws: {
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_REGION || 'auto',
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     s3: {

@@ -1,9 +1,33 @@
-.nx/polygraph
+# Claude Code
 .claude/worktrees
 .claude/settings.local.json
+
+# Nx
+.nx/
+
+# IDEs
+.idea/
+.vscode/
 
 # Next.js
 .next
 out
+
+# Build outputs
+dist/
+
+# Dependencies
+node_modules/
+
+# Environment files
 .env
-/node_modules/
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

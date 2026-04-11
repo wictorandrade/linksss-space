@@ -1,17 +1,13 @@
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/Logo'
+import Link from 'next/link'
 
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">L</span>
-          </div>
-          <span className="font-bold text-xl">Linksss</span>
-        </Link>
+        <Logo size="md" />
 
         {/* Nav */}
         <nav className="hidden md:flex items-center gap-6">
